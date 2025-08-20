@@ -28,11 +28,16 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    - name: Build and Push Docker Image
-      uses: mr-smithers-excellent/docker-build-push@v4
+    - name: Log in to Docker Hub
+      if: github.event_name == 'push'
+      uses: docker/login-action@v2
       with:
-        image: taha0703/demo-app
-        registry: docker.io
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-         
+
+    - name: Build and push Docker image
+      if: github.event_name == 'push'
+      uses: docker/build-push-action@v4
+      with:
+        push: true
+        tags: taha0703/demo-app:latest
